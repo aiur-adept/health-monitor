@@ -1,4 +1,5 @@
-/* DB
+/*
+ * DB
  *
  * the DB is structured by daily entries which can be used for alerting,
  * along with a set of tags for each day

@@ -7,12 +7,11 @@
 // our imports
 import { saveDB, loadDB, saveKVToDB, saveTSToDB } from './db.js';
 import { getName, say } from './io.js';
+import { termWidth, termHeight, resizeCallbacks } from './term.js';
 
 
 
-
-
-const dhamma = async function() {
+const dhamma = async function () {
     //
     // from name and form come therefore
     // the whole chain of lynx,
@@ -20,6 +19,7 @@ const dhamma = async function() {
     //
     const form = await loadDB();
     let name = null;
+
     if (!form['obj']['name']) {
         name = await getName().then(saveKVToDB(form, 'name'));
     } else {
@@ -28,14 +28,15 @@ const dhamma = async function() {
 
     say(`Hello! Welcome to healthmonitor, ${name}`);
 
-    // --read
-    // 1. display current stats
-    // 2. display & handle alerts
-    //
-    // --write
-    // 1. sequence of prompts
-    // 2. save to DB
-    // 3. display & handle alerts if applicable
+    // TODO: do this with a proper library
+    if (process.argv[2] == '--read') {
+        // Display current stats and handle alerts
+    } else if (process.argv[2] == '--write') {
+        // Perform sequence of prompts, save to DB, and handle alerts
+    } else {
+        say('should be given an arg of either --read or --write');
+        process.exit(1);
+    }
 };
 
 dhamma(); // meaning "logos", "phenomenon", "element", "way", and "teaching"
