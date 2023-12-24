@@ -8,83 +8,84 @@
 
 import * as fs from 'node:fs';
 
-
-
 const DB_FILE = './health-monitor_db.json';
 
-// form is emptiness, and emptiness is form
-let blankDB = {
-    // virtues
-    calm: [],
-    joy: [],
-    unified: [],
-    reflection: [],
-    community: [],
-    // the three poisons
-    craving: [],
-    anticraving: [],
-    delusion: [],
-    // each day has a tag
-    tags: [],
-    // k/v storage
-    obj: {},
-};
+const TS_GOOD = ['calm', 'joy', 'unified', 'reflection', 'community'];
+const TS_BAD = ['craving', 'anticraving', 'delusion'];
+// Sila, in essence: the doing of what's skillful, the non-doing of evil
+const TS_ALL = TS_GOOD.concat(TS_BAD);
 
-// save memdb to file
-const saveDB = (db) => {
-    return new Promise((res, rej) => {
-        fs.writeFile(DB_FILE,
-            JSON.stringify(db, undefined, 2),
-            (error) => {
-                if (error) {
-                    rej(error);
-                } else {
-                    res(true);
-                }
-            });
-    });
-};
+class HealthMonitorDB {
+  constructor() {
+    this.entries = [];
+    this.meta = {};
+  }
 
-const loadDB = () => {
-    return new Promise((res, rej) => {
-        fs.readFile(DB_FILE,
-            'utf8',
-            async function (error, data) {
-                if (error) {
-                    await saveDB(blankDB);
-                    res(blankDB);
-                } else {
-                    res(JSON.parse(data));
-                }
-            });
-    });
-};
-
-const saveKVToDB = (db, key) => {
-    return (val) => {
-        return new Promise(async function (res, rej) {
-            console.log(`saving [${key}: ${val}] to DB...`);
-            db['obj'][key] = val;
-            await saveDB(db);
-            res(val);
-        });
+  static getInstance() {
+    if (!HealthMonitorDB.instance) {
+      HealthMonitorDB.instance = new HealthMonitorDB();
     }
+    return HealthMonitorDB.instance;
+  }
+
+  blankEntry() {
+    return {
+      date: null,
+      data: [],
+      tags: [],
+    };
+  }
+
+  newEntry() {
+    const e = this.blankEntry();
+    e.date = new Date().toLocaleDateString('en-GB');
+    return e;
+  }
+
+  async saveDB() {
+    return new Promise((res, rej) => {
+      fs.writeFile(
+        DB_FILE,
+        JSON.stringify(this, undefined, 2),
+        (error) => {
+          if (error) {
+            rej(error);
+          } else {
+            res(true);
+          }
+        }
+      );
+    });
+  }
+
+  async loadDB() {
+    return new Promise((res, rej) => {
+      fs.readFile(
+        DB_FILE,
+        'utf8',
+        async (error, data) => {
+          if (error) {
+            console.error(`Could not open db file ${DB_FILE}; creating blank DB...`);
+            await this.saveDB();
+            res(this);
+          } else {
+            const parsedData = JSON.parse(data);
+            Object.assign(this, parsedData);
+            res(this);
+          }
+        }
+      );
+    });
+  }
+
+  async saveMeta(key, value) {
+    this.meta[key] = value;
+    await this.saveDB();
+    return value;
+  }
 }
 
-// save an observation to a timeseries in the DB
-const saveTSToDB = (db, tsKey, observation) => {
-    return (val) => {
-        return new Promise((res, rej) => {
-            console.log(`saving [${key}: ${val}] to DB...`);
-            // TODO: persist
-            res(val);
-        });
-    }
-};
-
 export {
-    saveDB,
-    loadDB,
-    saveKVToDB,
-    saveTSToDB,
+    HealthMonitorDB,
+    TS_ALL,
 };

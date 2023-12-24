@@ -18,8 +18,12 @@ const getName = () => r1.question('what is your name? > ');
 const say = (msg) => {
     console.log(chalk.green(msg));
 };
+const sayError = (msg) => {
+    console.log(chalk.grey(msg));
+};
 
 export {
     getName,
     say,
+    sayError,
 };

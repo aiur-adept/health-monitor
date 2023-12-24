@@ -5,43 +5,43 @@
  */
 
 // our imports
-import { saveDB, loadDB, saveKVToDB, saveTSToDB } from './db.js';
+import { HealthMonitorDB, TS_ALL } from './db.js';
 import { getName, say } from './io.js';
-import { termWidth, termHeight, resizeCallbacks } from './term.js';
 
-
-
-const dhamma = async function () {
-    //
-    // from name and form come therefore
-    // the whole chain of lynx,
-    // mutual co-arising...
-    //
-    const form = await loadDB();
+const birth = async function () {
+    const db = HealthMonitorDB.getInstance();
+    await db.loadDB();
+    const form = db;
     let name = null;
-
-    if (!form['obj']['name']) {
-        name = await getName().then(saveKVToDB(form, 'name'));
+    if (!form.meta.name) {
+        name = await getName().then((name) => db.saveMeta('name', name));
     } else {
-        name = form['obj']['name'];
+        name = form.meta.name;
     }
+    say(`Hello! Welcome to healthmonitor, ${name}, and may you be happy-minded`);
+    return form;
+};
 
-    say(`Hello! Welcome to healthmonitor, ${name}`);
+const reflect = async function () {
+    await birth();
 
-    // TODO: do this with a proper library
-    if (process.argv[2] == '--read') {
-        // Display current stats and handle alerts
+    if (process.argv[2] == '--check') {
+        // TODO: Display current stats and handle alerts
     } else if (process.argv[2] == '--write') {
-        // Perform sequence of prompts, save to DB, and handle alerts
+        // TODO: Perform sequence of prompts, save to DB, and display
+        for (const category in TS_ALL) {
+            // TODO: write getReport()
+            await getReport(category);
+        }
+        await saveDB();
     } else {
-        say('should be given an arg of either --read or --write');
+        say('should be given an arg of either --check or --write');
         process.exit(1);
     }
 };
-
-dhamma(); // meaning "logos", "phenomenon", "element", "way", and "teaching"
 
 // all composed things are like a dream
 // a drop of dew
 // a flash of light
 // this is how to observe them, how to meditate on them
+reflect();
