@@ -9,28 +9,37 @@
 
 import chalk from 'chalk';
 
+// values from 1-9
+const BOXEN = ['_', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+
+
+
+const displayValue = (value) => {
+    const percentage = (value / 9) * 100;
+    const charIndex = Math.round((percentage / 100) * (BOXEN.length - 1));
+    const character = BOXEN[charIndex];
+    // color-coding
+    let color = 'green'; // Default to green
+    if (percentage < 40) {
+        color = 'red'; // Less than 40% is red
+    } else if (percentage < 65) {
+        color = 'yellow'; // Less than 65% is yellow
+    }
+    return {character, color};
+};
+
 // Function to display the horizontal time series
-function displayTS(ts) {
-    // values from 1-9
-    const boxen = ['_', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+const displayTS = (ts) => {
     // for each data point
     ts.forEach((value, index) => {
         // select box
-        const percentage = (value / 9) * 100;
-        const charIndex = Math.round((percentage / 100) * (boxen.length - 1));
-        const character = boxen[charIndex];
-        // color-coding
-        let color = 'green'; // Default to green
-        if (percentage < 50) {
-            color = 'red'; // Less than 50% is red
-        } else if (percentage < 75) {
-            color = 'yellow'; // Less than 75% is yellow
-        }
+        const {character, color} = displayValue(value);
         process.stdout.write(chalk[color](character));
     });
     console.log(); // Move to the next line after displaying the time series
 }
 
 export {
+    displayValue,
     displayTS,
 };

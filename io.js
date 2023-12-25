@@ -13,7 +13,8 @@ const r1 = readline.createInterface({
     output: process.stdout
 });
 
-const getName = () => r1.question('what is your name? > ');
+const getName = () => r1.question(chalk.green('what is your name? > '));
+const getReport = (category) => r1.question(chalk.green(`${category}? > `));
 
 const say = (msg) => {
     console.log(chalk.green(msg));
@@ -21,9 +22,14 @@ const say = (msg) => {
 const sayError = (msg) => {
     console.log(chalk.grey(msg));
 };
+const magic = (msg) => {
+    console.log(chalk.blue(msg));
+}
 
 export {
     getName,
+    getReport,
     say,
     sayError,
+    magic,
 };

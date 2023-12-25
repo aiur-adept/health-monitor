@@ -10,10 +10,7 @@ import * as fs from 'node:fs';
 
 const DB_FILE = './health-monitor_db.json';
 
-const TS_GOOD = ['calm', 'joy', 'unified', 'reflection', 'community'];
-const TS_BAD = ['craving', 'anticraving', 'delusion'];
-// Sila, in essence: the doing of what's skillful, the non-doing of evil
-const TS_ALL = TS_GOOD.concat(TS_BAD);
+const TS_GOOD = ['calm', 'joy', 'unified', 'reflection', 'community', 'patience', 'clarity'];
 
 class HealthMonitorDB {
   constructor() {
@@ -31,18 +28,22 @@ class HealthMonitorDB {
   blankEntry() {
     return {
       date: null,
-      data: [],
+      data: {},
       tags: [],
     };
   }
 
-  newEntry() {
-    const e = this.blankEntry();
-    e.date = new Date().toLocaleDateString('en-GB');
-    return e;
-  }
+  destructure(category) {
+    const result = [];
+    this.entries.forEach(entry => {
+      if (entry.data && entry.data[category] !== undefined) {
+        result.push(entry.data[category]);
+      }
+    });
+    return result;
+  };
 
-  async saveDB() {
+  async save() {
     return new Promise((res, rej) => {
       fs.writeFile(
         DB_FILE,
@@ -58,7 +59,7 @@ class HealthMonitorDB {
     });
   }
 
-  async loadDB() {
+  async load() {
     return new Promise((res, rej) => {
       fs.readFile(
         DB_FILE,
@@ -66,7 +67,7 @@ class HealthMonitorDB {
         async (error, data) => {
           if (error) {
             console.error(`Could not open db file ${DB_FILE}; creating blank DB...`);
-            await this.saveDB();
+            await this.save();
             res(this);
           } else {
             const parsedData = JSON.parse(data);
@@ -80,12 +81,12 @@ class HealthMonitorDB {
 
   async saveMeta(key, value) {
     this.meta[key] = value;
-    await this.saveDB();
+    await this.save();
     return value;
   }
 }
 
 export {
     HealthMonitorDB,
-    TS_ALL,
+    TS_GOOD,
 };
