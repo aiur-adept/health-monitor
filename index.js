@@ -8,9 +8,13 @@ import chalk from 'chalk';
 
 // our imports
 import { HealthMonitorDB, TS_GOOD } from './db.js';
-import { getName, getReport, say, magic } from './io.js';
-import { displayValue, displayTS } from './display.js';
+import { getName, say, magic } from './io.js';
+import { displayTS } from './display.js';
+import { checkin } from './checkin.js';
+import { parseMode } from './cli.js';
 
+/* get name and form (nama+rupa)
+ * AKA, init the DB */
 const birth = async function () {
     const form = HealthMonitorDB.getInstance();
     await form.load();
@@ -24,6 +28,7 @@ const birth = async function () {
     return form;
 };
 
+/* read the DB (aka display TS) */
 const read = (form) => {
     magic("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     magic("~~~~~~~~~~~~~~~ reflect on the past ~~~~~~~~~~~~~~~");
@@ -37,34 +42,7 @@ const read = (form) => {
     process.exit(0);
 };
 
-const checkin = async function (form) {
-    // print banner
-    console.log();
-    say('... ~~~ Hover your hand above the numbers, and press what feels right:');
-    console.log();
-    // make a blank entry for today
-    const entry = form.blankEntry();
-    const saneFormat = 'en-GB'; // DD-MM-YYYY
-    entry.date = new Date().toLocaleDateString(saneFormat);
-    // iterate categories
-    for (const category of TS_GOOD) {
-        let validInt = false;
-        while (!validInt) {
-            const response = await getReport(category);
-            const parsed = parseInt(response);
-            validInt = !isNaN(parsed) && (parsed >= 1 && parsed <= 9);
-            if (!validInt) {
-                sayError('Please enter a valid integer from [1-9]');
-            } else {
-                const {character, color} = displayValue(parsed);
-                console.log(chalk[color](character));
-                entry.data[category] = parsed;
-            }
-        }
-    }
-    return entry;
-};
-
+/* get readings from user and save to DB */
 const write = async function (form) {
     // iterate each category and get report
     const entry = await checkin(form);
@@ -75,19 +53,7 @@ const write = async function (form) {
     read(form);
 }
 
-const parseMode = (x) => {
-    switch (x) {
-        case '-r':
-        case '--read':
-            return 'r';
-        case '-w':
-        case '--write':
-            return 'w';
-        default:
-            return null;
-    }
-}
-
+/* program entrypoint */
 const reflect = async function (x) {
     const form = await birth();
     const mode = parseMode(x);
@@ -97,11 +63,8 @@ const reflect = async function (x) {
             read(form);
             break;
         case 'w':
-            write(form);
-            break;
         default:
-            say('should be given an arg of either --check or --write');
-            process.exit(1);
+            write(form);
             break;
     };
 };

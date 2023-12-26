@@ -15,6 +15,9 @@ const BOXEN = ['_', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
 
 
 const displayValue = (value) => {
+    if (value === null) {
+        return {character: 'x', color: 'grey'};
+    }
     const percentage = (value / 9) * 100;
     const charIndex = Math.round((percentage / 100) * (BOXEN.length - 1));
     const character = BOXEN[charIndex];
