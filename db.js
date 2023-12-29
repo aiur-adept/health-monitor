@@ -12,7 +12,7 @@ import { sayError } from './io.js';
 
 const DB_FILE = './health-monitor_db.json';
 
-const TS_GOOD = ['calm', 'joy', 'unified', 'reflection', 'community', 'generosity', 'patience', 'clarity'];
+const TS_GOOD = ['calm', 'joy', 'unified', 'reflection', 'healing', 'community', 'generosity', 'effort', 'patience', 'clarity'];
 
 class HealthMonitorDB {
   constructor() {
@@ -43,8 +43,10 @@ class HealthMonitorDB {
     return entry;
   }
 
-  destructure(category) {
-    return this.entries.map(entry => entry.data[category]);
+  /* get just the values of a category across each day
+    return the last n entries or, if n not provided, all entries */
+  destructure(category, n) {
+    return this.entries.slice(-(n || this.entries.length)).map(entry => entry.data[category]);
   };
 
   async save() {
@@ -78,6 +80,8 @@ class HealthMonitorDB {
             Object.assign(this, parsedData);
             // Check if there are missing entries and backfill null
             this.backfillMissingEntries();
+            // Backfill missing *categories* now
+            this.backfillMissingCategories();
             res(this);
           }
         }
@@ -105,6 +109,16 @@ class HealthMonitorDB {
         const nullEntry = this.nullEntry();
         nullEntry.date = currentDate.toLocaleDateString('en-GB');
         this.entries.push(nullEntry);
+      }
+    }
+  }
+
+  backfillMissingCategories() {
+    for (let entry of this.entries) {
+      for (let category of TS_GOOD) {
+        if (!entry.data[category]) {
+          entry.data[category] = null;
+        }
       }
     }
   }

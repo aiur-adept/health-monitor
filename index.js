@@ -35,7 +35,8 @@ const read = (form) => {
     magic("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     for (const category of TS_GOOD) {
         magic(category);
-        displayTS(form.destructure(category));
+        // TODO: display only last 14 days (with an ellipsis to the left if applicable)
+        displayTS(form.destructure(category, 7+7));
         // TODO: handle alerts/warnings?
     }
     say('Thank you for taking the time to check in! May you be happy-minded.');
