@@ -90,30 +90,32 @@ class HealthMonitorDB {
   }
 
   backfillMissingEntries() {
-    // helper fn
+    // Helper function to construct a Date object from a date string
     const constructDate = (dateString) => {
       const [day, month, year] = dateString.split('/');
       // Month in JavaScript is 0-indexed, so subtract 1 from the parsed month
       const adjustedMonth = parseInt(month, 10) - 1;
       const d = new Date(year, adjustedMonth, day);
       return d;
-    }
-    const today = new Date().toLocaleDateString('en-GB'); // Format: dd/MM/yyyy
-    const lastEntryDate = this.entries.length > 0 ?
-      this.entries[this.entries.length - 1].date : null;
-    if (lastEntryDate) {
-      let currentDate = constructDate(lastEntryDate);
-      currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+    };
 
-      // If there are missing entries between last entry date and today, backfill them
-      while (currentDate.toLocaleDateString('en-GB') !== today) {
+    const today = new Date().toLocaleDateString('en-GB'); // Format: dd/MM/yyyy
+
+    // Check if there are existing entries
+    if (this.entries.length > 0) {
+      const lastEntryDate = this.entries[this.entries.length - 1].date;
+      let currentDate = constructDate(lastEntryDate);
+
+      // Loop until currentDate is less than today
+      while (currentDate.toLocaleDateString('en-GB') < today) {
+        currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
         const nullEntry = this.nullEntry();
         nullEntry.date = currentDate.toLocaleDateString('en-GB');
         this.entries.push(nullEntry);
-        currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
       }
     }
   }
+
 
   backfillMissingCategories() {
     for (let entry of this.entries) {
