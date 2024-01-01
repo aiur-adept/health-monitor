@@ -36,7 +36,7 @@ const read = (form) => {
     for (const category of TS_GOOD) {
         magic(category);
         // TODO: display only last 14 days (with an ellipsis to the left if applicable)
-        displayTS(form.destructure(category, 7+7));
+        displayTS(form.destructure(category, 7 + 7));
         // TODO: handle alerts/warnings?
     }
     say('Thank you for taking the time to check in! May you be happy-minded.');
@@ -47,7 +47,7 @@ const read = (form) => {
 const write = async function (form) {
     // iterate each category and get report
     const entry = await checkin(form);
-    form.entries.push(entry);
+    form.insertTodaysEntry(entry);
     await form.save();
     // continue?
     say('Well done! Your health is worth reflecting on, and may it blossom!');

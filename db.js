@@ -116,7 +116,6 @@ class HealthMonitorDB {
     }
   }
 
-
   backfillMissingCategories() {
     for (let entry of this.entries) {
       for (let category of TS_GOOD) {
@@ -124,6 +123,15 @@ class HealthMonitorDB {
           entry.data[category] = null;
         }
       }
+    }
+  }
+
+  insertTodaysEntry(entry) {
+    // if today was already noted, overwrite
+    if (entry.date == this.entries[this.entries.length - 1].date) {
+      this.entries[this.entries.length - 1] = entry;
+    } else {
+      this.entries.push(entry);
     }
   }
 
