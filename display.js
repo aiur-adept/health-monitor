@@ -16,7 +16,7 @@ const BOXEN = ['_', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
 
 const displayValue = (value) => {
     if (value === null) {
-        return {character: 'x', color: 'grey'};
+        return { character: 'x', color: 'grey' };
     }
     const percentage = (value / 9) * 100;
     const charIndex = Math.round((percentage / 100) * (BOXEN.length - 1));
@@ -28,7 +28,7 @@ const displayValue = (value) => {
     } else if (percentage < 65) {
         color = 'yellow'; // Less than 65% is yellow
     }
-    return {character, color};
+    return { character, color };
 };
 
 // Function to display the horizontal time series
@@ -36,9 +36,13 @@ const displayTS = (ts) => {
     // for each data point
     ts.forEach((value, index) => {
         // select box
-        const {character, color} = displayValue(value);
+        const { character, color } = displayValue(value);
         process.stdout.write(chalk[color](character));
     });
+    const diff = ts[ts.length - 1] - ts[ts.length - 2];
+    let color = (diff == 0) ? 'white' : ((diff < 0) ? 'yellow' : 'green');
+    process.stdout.write(` ${chalk[color](diff)}`);
+
     console.log(); // Move to the next line after displaying the time series
 }
 
