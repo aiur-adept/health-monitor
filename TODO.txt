@@ -1,0 +1,1 @@
+show deltas compared to mean on write for each category
