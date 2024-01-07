@@ -39,9 +39,11 @@ const displayTS = (ts) => {
         const { character, color } = displayValue(value);
         process.stdout.write(chalk[color](character));
     });
-    const diff = ts[ts.length - 1] - ts[ts.length - 2];
-    let color = (diff == 0) ? 'white' : ((diff < 0) ? 'yellow' : 'green');
-    process.stdout.write(` ${chalk[color](diff)}`);
+    if (ts[ts.length - 1]) {
+        const diff = ts[ts.length - 1] - ts[ts.length - 2];
+        let color = (diff == 0) ? 'white' : ((diff < 0) ? 'yellow' : 'green');
+        process.stdout.write(` ${chalk[color](diff)}`);
+    }
 
     console.log(); // Move to the next line after displaying the time series
 }
