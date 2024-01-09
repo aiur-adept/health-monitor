@@ -40,9 +40,18 @@ const displayTS = (ts) => {
         process.stdout.write(chalk[color](character));
     });
     if (ts[ts.length - 1]) {
-        const diff = ts[ts.length - 1] - ts[ts.length - 2];
-        let color = (diff == 0) ? 'white' : ((diff < 0) ? 'yellow' : 'green');
-        process.stdout.write(` ${chalk[color](diff)}`);
+        let compareEntry;
+        for (let ix = ts.length - 2; ix >= 0; ix--) {
+            if (ts[ix]) {
+                compareEntry = ts[ix];
+                break;
+            }
+        }
+        if (compareEntry) {
+            const diff = ts[ts.length - 1] - compareEntry;
+            let color = (diff == 0) ? 'white' : ((diff < 0) ? 'yellow' : 'green');
+            process.stdout.write(` ${chalk[color](diff)}`);
+        }
     }
 
     console.log(); // Move to the next line after displaying the time series
