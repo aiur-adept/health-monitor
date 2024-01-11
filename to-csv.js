@@ -30,3 +30,5 @@ for (const entry of db.entries) {
 }
 
 console.log(content);
+
+process.exit(0);

@@ -175,3 +175,4 @@ dist
 # my ignores
 #
 health-monitor_db.json
+.csv
