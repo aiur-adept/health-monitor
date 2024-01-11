@@ -4,8 +4,6 @@
  * license: MIT
  */
 
-import chalk from 'chalk';
-
 // our imports
 import { HealthMonitorDB, TS_GOOD } from './db.js';
 import { getName, say, magic } from './io.js';

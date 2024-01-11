@@ -10,7 +10,7 @@ import * as fs from 'node:fs';
 
 import { sayError } from './io.js';
 
-const DB_FILE = './health-monitor_db.json';
+export const DB_FILE = './health-monitor_db.json';
 
 const TS_GOOD = ['calm', 'joy', 'unified', 'reflection', 'healing', 'community', 'generosity', 'effort', 'patience', 'clarity'];
 
